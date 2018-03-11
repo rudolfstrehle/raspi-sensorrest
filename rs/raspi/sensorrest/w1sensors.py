@@ -16,7 +16,7 @@ class W1Sensors(SensorApi):
         self.__thread.start()
 
     def __del__(self):
-        self.__thread.__stop.set()
+        self.__stop.set()
         self.__thread.join(10)
 
     def __len__(self):
@@ -36,10 +36,10 @@ class W1Sensors(SensorApi):
 
     def __run(self):
         while not self.__stop.wait(1):
-            try:
-                self.__sensors = self.__poll_sensors()
-            except Exception as e:
-                print(e)
+            #try:
+            self.__sensors = self.__poll_sensors()
+            #except Exception as e:
+            #    print(e)
 
     def __get_device_folders(self, base_dir):
         while True:
@@ -69,5 +69,5 @@ class W1Sensors(SensorApi):
 
         sensors = [SensorInfo(sensor_id=k, value=v, unit="C")
                    for k, v in self.__get_values(
-                       self.__get_device_folders(base_dir))]
+                       self.__get_device_folders(base_dir)).items()]
         return sensors

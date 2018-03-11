@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class SensorInfo(object):
-    def __init__(self, sensor_id: str, name: str, unit: str, value: float,
+    def __init__(self, sensor_id: str, name: str = None, unit: str = None, value: float = None,
                  when: datetime=datetime.utcnow()):
         self.__name = name if name else sensor_id
         self.__id = sensor_id
@@ -32,4 +32,4 @@ class SensorInfo(object):
         return self.__when
 
 
-SensorApi = typing.Collection[SensorInfo]
+SensorApi = typing.Iterable[SensorInfo]
