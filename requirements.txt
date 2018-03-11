@@ -2,7 +2,6 @@
 RPi.GPIO
 #wiringpi
 #spidev
-
 # REST
 flask
 flask-restful
