@@ -1,6 +1,6 @@
 from .sensorinfo import SensorInfo, SensorApi
 from threading import Thread, Event
-import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO  # @UnresolvedImport
 import glob
 import time
 
@@ -36,10 +36,7 @@ class W1Sensors(SensorApi):
 
     def __run(self):
         while not self.__stop.wait(1):
-            #try:
             self.__sensors = self.__poll_sensors()
-            #except Exception as e:
-            #    print(e)
 
     def __get_device_folders(self, base_dir):
         while True:

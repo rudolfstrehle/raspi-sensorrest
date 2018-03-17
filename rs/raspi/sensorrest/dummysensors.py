@@ -1,13 +1,19 @@
+from random import random
+from threading import Thread, Event
+
 from .sensorinfo import SensorInfo, SensorApi
 
 
 class DummySensors(SensorApi):
     def __init__(self):
         self.__sensors = []
-        self.__sensors.append(SensorInfo(
-            name="Test 1", sensor_id="4711", value=24.1, unit="C"))
-        self.__sensors.append(SensorInfo(
-            name="Test 2", sensor_id="4712", value=23.5, unit="C"))
+        self.__thread = Thread(target=self.__run, daemon=True)
+        self.__stop = Event()
+        self.__thread.start()
+
+    def __del__(self):
+        self.__stop.set()
+        self.__thread.join(10)
 
     def __len__(self):
         return self.__sensors.__len__()
@@ -23,3 +29,18 @@ class DummySensors(SensorApi):
 
     def __getitem__(self, item):
         return [i for i in self if i.sensor_id == item][0]
+
+    def __run(self):
+        while not self.__stop.wait(1):
+            self.__sensors = self.__poll_sensors()
+
+    def __get_values(self):
+        values = {}
+        for i in range(int(10 * random())):
+            values["random-" + str(i)] = 20 + random() * 10
+        return values
+
+    def __poll_sensors(self):
+        sensors = [SensorInfo(sensor_id=k, value=v, unit="C")
+                   for k, v in self.__get_values().items()]
+        return sensors

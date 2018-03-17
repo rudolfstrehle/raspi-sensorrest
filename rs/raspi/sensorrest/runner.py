@@ -9,11 +9,13 @@ except:  # @IgnorePep8
     from rs.raspi.sensorrest.dummysensors import DummySensors
     sensors = DummySensors()
 
+
 def main():
     app = Flask(__name__)
     api = Api(app, title="Raspberri Pi Sensor REST API")
     rest(api, sensors)
     app.run(host='0.0.0.0')
+
 
 if __name__ == '__main__':
     main()

@@ -3,13 +3,14 @@ from datetime import datetime
 
 
 class SensorInfo(object):
-    def __init__(self, sensor_id: str, name: str = None, unit: str = None, value: float = None,
-                 when: datetime=datetime.utcnow()):
+    def __init__(self, sensor_id: str, name: str = None, unit: str = None,
+                 value: float = None,
+                 when: datetime=None):
         self.__name = name if name else sensor_id
         self.__id = sensor_id
         self.__unit = unit
         self.__value = value
-        self.__when = when
+        self.__when = when if when else datetime.utcnow()
 
     @property
     def name(self):
