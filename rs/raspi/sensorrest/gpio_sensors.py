@@ -1,5 +1,5 @@
 from .sensorinfo import SensorInfo, SensorApi
-from threading import Thread, Event
+from threading import Thread, Event, Lock
 from random import random
 
 try:
@@ -35,6 +35,7 @@ class GPIOSensors(SensorApi):
         self.__stop = Event()
         self.__io = io
         self.__output = {}
+        self.__lock = Lock()
 
         GPIO.setmode(GPIO.BCM)
         
@@ -65,18 +66,26 @@ class GPIOSensors(SensorApi):
 
     def __setitem__(self, key, value):
         i = int(key[5:])
-        GPIO.output(i, value)
-        self.__output[i] = value
+        with self.__lock:
+            GPIO.output(i, value)
+            self.__output[i] = value
+        self.__update_sensors()
 
     def __run(self):
         while not self.__stop.wait(1):
-            self.__sensors = self.__poll_sensors()
+            self.__update_sensors()
+            
+    def __update_sensors(self):
+        sensors = self.__poll_sensors()
+        with self.__lock:
+            self.__sensors = sensors
 
     def __get_values(self):
         values = {}
-        for k, v in self.__output.items():
-            name = 'gpio-{}'.format(k)
-            values[name] = v
+        with self.__lock:
+            for k, v in self.__output.items():
+                name = 'gpio-{}'.format(k)
+                values[name] = v
         for k, v in self.__io.items():
             if v.lower().startswith("i"):
                 name = 'gpio-{}'.format(k)
