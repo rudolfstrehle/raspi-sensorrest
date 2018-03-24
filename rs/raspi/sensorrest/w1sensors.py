@@ -22,8 +22,8 @@ class W1Sensors(SensorApi):
     def __len__(self):
         return self.__sensors.__len__()
 
-    def __contains__(self, x):
-        return self.__sensors.__contains__(x)
+    def __contains__(self, item):
+        return len([i for i in self if i.sensor_id == item]) > 0
 
     def __iter__(self):
         return self.__sensors.__iter__()

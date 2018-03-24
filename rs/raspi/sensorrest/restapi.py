@@ -1,5 +1,5 @@
 import flask_restplus
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import NotFound, BadRequest
 
 from .sensorinfo import SensorApi
 
@@ -30,7 +30,20 @@ def init(api: flask_restplus.Api, sensors: SensorApi):
         def get(self, sensor_id):
             try:
                 return sensors[sensor_id]
-            except IndexError:
+            except (IndexError, KeyError):
                 raise NotFound()
+            
+    @ns.route('/<string:sensor_id>/<int:value>')
+    class SensorUpdate(flask_restplus.Resource):
+        @ns.marshal_with(sensorInfo)
+        @ns.response(404, "If sensor id is not known")
+        def put(self, sensor_id, value):
+            try:
+                sensors[sensor_id] = value
+                return sensors[sensor_id]
+            except (IndexError, KeyError):
+                raise NotFound()
+            except TypeError:
+                raise BadRequest()
 
     api.add_namespace(ns)
