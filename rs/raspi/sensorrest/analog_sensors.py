@@ -2,19 +2,20 @@ from .sensorinfo import SensorInfo, SensorApi
 from threading import Thread, Event, Lock
 
 try:
-    import spidev
-    spi = spidev.SpiDev()
-    spi.open(0,0)
+    from spidev import SpiDev
 except:
-    class SpiDummy:
-        def xfer2(self, *args):  # @UnusedVariable
-            return [0, 0, 0]
+    class SpiDev:
+        def open(self, *args):
+            pass
         
-    spi = SpiDummy()
+        def xfer2(self, *args):  # @UnusedVariable
+            return [0, 0, -1]
 
 
 class AnalogSensors(SensorApi):
     def __init__(self):
+        self.__spi = SpiDev()
+        self.__spi.open(0,0)
         self.__sensors = []
         self.__thread = Thread(target=self.__run, daemon=True)
         self.__stop = Event()
@@ -47,7 +48,7 @@ class AnalogSensors(SensorApi):
             self.__sensors = sensors
             
     def __readadc(self, adcnum):
-        r = spi.xfer2([1,8+adcnum <<4,0])
+        r = self.__spi.xfer2([1,8+adcnum <<4,0])
         adcout = ((r[1] &3) <<8)+r[2]
         return adcout
 
