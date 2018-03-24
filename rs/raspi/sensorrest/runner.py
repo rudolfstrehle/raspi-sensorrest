@@ -10,6 +10,7 @@ except:  # @IgnorePep8
     w1sensors = DummySensors()
     
 from rs.raspi.sensorrest.gpio_sensors import GPIOSensors
+from rs.raspi.sensorrest.analog_sensors import AnalogSensors
 from rs.raspi.sensorrest.aggregated_sensors import AggregatedSensors
 
 gpiosensors = GPIOSensors({
@@ -45,7 +46,7 @@ gpiosensors = GPIOSensors({
 def main():
     app = Flask(__name__)
     api = Api(app, title="Raspberri Pi Sensor REST API")
-    rest(api, AggregatedSensors(w1sensors, gpiosensors))
+    rest(api, AggregatedSensors(w1sensors, gpiosensors, AnalogSensors()))
     app.run(host='0.0.0.0')
 
 
